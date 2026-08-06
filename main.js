@@ -2,14 +2,16 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');function createWindow() {
 const win = new BrowserWindow({
-width: 420,
-height: 900,
+width: 600,
+height: 1000,
 webPreferences: {
 nodeIntegration: false,
 contextIsolation: true,
 },
 autoHideMenuBar: true,
-resizable: false,
+resizable: true,
+minWidth: 360,
+minHeight: 700,
 });
 win.loadFile('phone-emulator.html');
 }
