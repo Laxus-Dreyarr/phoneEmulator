@@ -3,57 +3,70 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ultra HD Mobile Emulator</title>
+  <title>Ultra HD Floating Mobile Emulator</title>
   <style>
+    :root {
+      /* Dynamic HD variables */
+      --scale: 1;
+      --rot: 0deg;
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      text-rendering: optimizeLegibility;
     }
+
+    /* Completely clean/transparent background like Android Studio */
     body {
-      background: #090a0f;
+      background: transparent;
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
-    /* Outer Wrapper for scaling without bitmap stretching */
-    #phone-scaler {
-      transform-origin: center center;
-      will-change: transform;
+    /* ----- MAIN WRAPPER (Tightly wraps phone like a transparent PNG) ----- */
+    #emulator-wrapper {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    #phone-container {
-      perspective: 2000px;
-      transform-origin: center center;
-      display: inline-block;
-      will-change: transform;
+    /* 3D Scene */
+    #phone-scene {
+      perspective: calc(2000px * var(--scale));
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    /* ----- PHONE FRAME ----- */
+    /* ----- PHONE FRAME (Natively scaled in HD) ----- */
     #phone {
-      width: 375px;
-      height: 812px;
+      width: calc(375px * var(--scale));
+      height: calc(812px * var(--scale));
       background: #000;
-      border-radius: 44px;
-      padding: 12px;
-      box-shadow: 0 30px 100px rgba(0, 0, 0, 0.9), 0 0 0 2px #2a2a2a;
+      border-radius: calc(44px * var(--scale));
+      padding: calc(12px * var(--scale));
+      box-shadow: 0 calc(20px * var(--scale)) calc(60px * var(--scale)) rgba(0, 0, 0, 0.65), 
+                  0 0 0 calc(2px * var(--scale)) #2a2a2a;
       position: relative;
       flex-shrink: 0;
+      transform: rotateY(var(--rot));
+      transform-style: preserve-3d;
+      transition: background 0.3s;
     }
 
     /* Screen area */
     #screen {
       width: 100%;
       height: 100%;
-      border-radius: 32px;
+      border-radius: calc(32px * var(--scale));
       overflow: hidden;
       background: #fff;
       display: flex;
@@ -63,21 +76,21 @@
 
     /* Status bar */
     #status-bar {
-      height: 44px;
+      height: calc(44px * var(--scale));
       background: rgba(255, 255, 255, 0.98);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 24px;
-      font-size: 14px;
+      padding: 0 calc(24px * var(--scale));
+      font-size: calc(14px * var(--scale));
       font-weight: 600;
-      color: #222;
-      border-bottom: 1px solid #e5e5e5;
+      color: #111;
+      border-bottom: calc(1px * var(--scale)) solid #e5e5e5;
       user-select: none;
       z-index: 20;
     }
     #status-bar .time { font-weight: 700; }
-    #status-bar .icons { display: flex; gap: 6px; font-size: 15px; }
+    #status-bar .icons { display: flex; gap: calc(6px * var(--scale)); font-size: calc(15px * var(--scale)); }
 
     /* Browser area */
     #browser {
@@ -86,63 +99,59 @@
       flex-direction: column;
       background: #f8f9fa;
       position: relative;
-      overflow: hidden;
     }
 
-    /* Address bar */
+    /* HD Address bar */
     #address-bar {
       display: flex;
-      padding: 8px 12px;
-      gap: 8px;
+      padding: calc(8px * var(--scale)) calc(12px * var(--scale));
+      gap: calc(8px * var(--scale));
       background: #fff;
-      border-bottom: 1px solid #ddd;
+      border-bottom: calc(1px * var(--scale)) solid #ddd;
       z-index: 20;
     }
     #address-bar input {
       flex: 1;
-      padding: 8px 14px;
-      border: 1px solid #ccc;
-      border-radius: 20px;
-      font-size: 13px;
+      padding: calc(8px * var(--scale)) calc(14px * var(--scale));
+      border: calc(1px * var(--scale)) solid #ccc;
+      border-radius: calc(20px * var(--scale));
+      font-size: calc(14px * var(--scale));
       outline: none;
       background: #f1f3f4;
     }
     #address-bar button {
-      padding: 0 16px;
+      padding: 0 calc(16px * var(--scale));
       background: #007aff;
       color: #fff;
       border: none;
-      border-radius: 20px;
-      font-size: 13px;
+      border-radius: calc(20px * var(--scale));
+      font-size: calc(14px * var(--scale));
       font-weight: 600;
       cursor: pointer;
     }
 
-    /* 
-      ULTRA HD IFRAME WRAPPER 
-      Renders the webview at double density (2x DPI) and shrinks it 
-      with transform to force razor-sharp vector/font anti-aliasing.
-    */
+    /* HD Webview Engine */
     #webview-container {
       flex: 1;
       width: 100%;
-      height: 100%;
       position: relative;
       overflow: hidden;
     }
-
     #webview {
-      width: 200%;
-      height: 200%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 375px; 
+      height: calc(100% / var(--scale));
+      transform-origin: top left;
+      transform: scale(var(--scale));
       border: none;
       background: #fff;
-      transform-origin: top left;
-      transform: scale(0.5);
     }
 
     /* Home indicator */
     #home-indicator {
-      height: 30px;
+      height: calc(30px * var(--scale));
       display: flex;
       align-items: center;
       justify-content: center;
@@ -150,80 +159,157 @@
       z-index: 20;
     }
     #home-indicator .bar {
-      width: 134px;
-      height: 5px;
+      width: calc(134px * var(--scale));
+      height: calc(5px * var(--scale));
       background: #222;
-      border-radius: 3px;
+      border-radius: calc(3px * var(--scale));
     }
 
     /* Notch */
     #notch {
       position: absolute;
-      top: 12px;
+      top: calc(12px * var(--scale));
       left: 50%;
       transform: translateX(-50%);
-      width: 150px;
-      height: 30px;
+      width: calc(150px * var(--scale));
+      height: calc(30px * var(--scale));
       background: #000;
-      border-radius: 0 0 18px 18px;
+      border-radius: 0 0 calc(18px * var(--scale)) calc(18px * var(--scale));
       z-index: 30;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: calc(8px * var(--scale));
     }
-    #notch .speaker { width: 40px; height: 4px; background: #222; border-radius: 2px; }
-    #notch .camera { width: 8px; height: 8px; background: #111; border-radius: 50%; border: 1px solid #222; }
+    #notch .speaker { 
+      width: calc(40px * var(--scale)); 
+      height: calc(4px * var(--scale)); 
+      background: #222; 
+      border-radius: calc(2px * var(--scale)); 
+    }
+    #notch .camera { 
+      width: calc(8px * var(--scale)); 
+      height: calc(8px * var(--scale)); 
+      background: #111; 
+      border-radius: 50%; 
+      border: calc(1px * var(--scale)) solid #222; 
+    }
 
-    /* Control Panel */
-    #controls {
-      position: fixed;
-      bottom: 20px;
-      background: rgba(25, 27, 40, 0.95);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      padding: 12px 24px;
-      border-radius: 40px;
+    /* Android Mode Override */
+    #phone.android { border-radius: calc(32px * var(--scale)); background: #1a1a1a; }
+    #phone.android #notch { display: none; }
+    #phone.android #status-bar { background: rgba(240, 240, 240, 0.9); }
+    #phone.android #address-bar button { background: #34a853; }
+    #phone.android #home-indicator .bar { width: calc(48px * var(--scale)); background: #666; }
+
+    /* ----- FLOATING RIGHT SIDE CONTROLS MENU ----- */
+    #controls-container {
+      position: absolute;
+      right: calc(-60px); /* Positioned directly on the right edge of the phone */
+      top: 50%;
+      transform: translateY(-50%);
       display: flex;
-      gap: 20px;
       align-items: center;
-      border: 1px solid rgba(255,255,255,0.12);
       z-index: 1000;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
     }
-    #controls label {
+
+    /* Single Control Trigger Button */
+    #controls-toggle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #1e202e;
       color: #fff;
-      font-size: 13px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
     }
-    #controls input[type="range"] {
-      width: 100px;
-      accent-color: #007aff;
+    #controls-toggle:hover {
+      background: #007aff;
+      transform: scale(1.08);
     }
-    #controls button {
-      padding: 8px 16px;
-      border: none;
+
+    /* Popout Panel */
+    #controls-panel {
+      position: absolute;
+      left: 54px;
+      background: rgba(20, 22, 30, 0.95);
+      backdrop-filter: blur(12px);
+      padding: 16px;
       border-radius: 20px;
-      font-size: 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(-10px) scale(0.95);
+      transition: all 0.2s ease-out;
+      width: 180px;
+    }
+
+    #controls-panel.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0) scale(1);
+    }
+
+    #controls-panel .theme-group {
+      display: flex;
+      gap: 6px;
+    }
+    #controls-panel .theme-group button {
+      flex: 1;
+      padding: 6px 0;
+      border: none;
+      border-radius: 12px;
+      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
       background: #2d2d44;
       color: #fff;
     }
-    #controls button.active { background: #007aff; }
+    #controls-panel .theme-group button.active { background: #007aff; }
 
-    /* Android Mode Override */
-    #phone.android #notch { display: none; }
-    #phone.android #home-indicator .bar { width: 48px; background: #666; }
+    #controls-panel label {
+      color: #aaa;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    #controls-panel input[type="range"] {
+      width: 100%;
+      accent-color: #007aff;
+    }
+
+    #controls-panel #reset-btn {
+      padding: 8px;
+      border: none;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      background: #333;
+      color: #fff;
+    }
+    #controls-panel #reset-btn:hover { background: #444; }
   </style>
 </head>
 <body>
 
-  <!-- Scaler Wrapper: Handles Size without destroying DPI -->
-  <div id="phone-scaler">
-    <div id="phone-container">
+  <!-- Emulator Wrapper (PNG style fit) -->
+  <div id="emulator-wrapper">
+    
+    <div id="phone-scene">
       <div id="phone" class="iphone">
         <div id="notch">
           <span class="speaker"></span>
@@ -239,7 +325,6 @@
               <input type="text" id="url-input" placeholder="http://localhost:3000" />
               <button id="go-btn">Go</button>
             </div>
-            <!-- HD Super-Sampling Container -->
             <div id="webview-container">
               <iframe id="webview" src="about:blank"></iframe>
             </div>
@@ -250,26 +335,29 @@
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Interactive Controls Panel -->
-  <div id="controls">
-    <button id="theme-iphone" class="active">iPhone</button>
-    <button id="theme-android">Android</button>
-    
-    <label>Rotate:
-      <input type="range" id="rotate-slider" min="-90" max="90" value="0" />
-    </label>
+    <!-- Right Side Floating Button & Controls -->
+    <div id="controls-container">
+      <button id="controls-toggle" title="Toggle Controls">⚙️</button>
+      
+      <div id="controls-panel">
+        <div class="theme-group">
+          <button id="theme-iphone" class="active">iPhone</button>
+          <button id="theme-android">Android</button>
+        </div>
+        
+        <label>Rotate
+          <input type="range" id="rotate-slider" min="-60" max="60" value="0" />
+        </label>
 
-    <label>Size:
-      <input type="range" id="scale-slider" min="0.5" max="3.0" step="0.05" value="1.0" />
-    </label>
+        <label>Scale
+          <input type="range" id="scale-slider" min="0.5" max="3.0" step="0.05" value="1.0" />
+        </label>
 
-    <label>Resolution:
-      <button id="dpi-toggle" style="background:#007aff; padding:4px 12px;">2x HD</button>
-    </label>
+        <button id="reset-btn">Reset</button>
+      </div>
+    </div>
 
-    <button id="reset-btn">Reset</button>
   </div>
 
   <script>
@@ -282,68 +370,43 @@
       const themeAndroid = document.getElementById('theme-android');
       const rotateSlider = document.getElementById('rotate-slider');
       const scaleSlider = document.getElementById('scale-slider');
-      const dpiToggle = document.getElementById('dpi-toggle');
       const resetBtn = document.getElementById('reset-btn');
-      const phoneContainer = document.getElementById('phone-container');
-      const phoneScaler = document.getElementById('phone-scaler');
+      const controlsToggle = document.getElementById('controls-toggle');
+      const controlsPanel = document.getElementById('controls-panel');
+      const root = document.documentElement;
 
       let currentRot = 0;
       let userScale = 1.0;
       let manualSizeOverride = false;
-      let dpiMultiplier = 2; // Default 2x HD Supersampling
 
-      // HD Resolution Multiplier Logic
-      function updateDpi() {
-        if (dpiMultiplier === 1) {
-          webview.style.width = '100%';
-          webview.style.height = '100%';
-          webview.style.transform = 'none';
-          dpiToggle.textContent = '1x SD';
-          dpiToggle.style.background = '#555';
-        } else if (dpiMultiplier === 2) {
-          webview.style.width = '200%';
-          webview.style.height = '200%';
-          webview.style.transform = 'scale(0.5)';
-          dpiToggle.textContent = '2x HD';
-          dpiToggle.style.background = '#007aff';
-        } else if (dpiMultiplier === 3) {
-          webview.style.width = '300%';
-          webview.style.height = '300%';
-          webview.style.transform = 'scale(0.333333)';
-          dpiToggle.textContent = '3x Ultra HD';
-          dpiToggle.style.background = '#34c759';
+      // Toggle Controls Flyout Panel
+      controlsToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        controlsPanel.classList.toggle('open');
+      });
+
+      // Close controls panel when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!controlsPanel.contains(e.target) && e.target !== controlsToggle) {
+          controlsPanel.classList.remove('open');
         }
-      }
-
-      dpiToggle.addEventListener('click', function() {
-        dpiMultiplier = dpiMultiplier === 1 ? 2 : (dpiMultiplier === 2 ? 3 : 1);
-        updateDpi();
       });
 
       function calculateAutoFitScale() {
         if (manualSizeOverride) return userScale;
-
-        const phoneWidth = 375;
-        const phoneHeight = 812;
-        const margin = 160; 
-
+        const phoneWidth = 375, phoneHeight = 812, margin = 120; 
         const scaleX = (window.innerWidth - margin) / phoneWidth;
         const scaleY = (window.innerHeight - margin) / phoneHeight;
-        
         return Math.min(scaleX, scaleY);
       }
 
       function applyTransform() {
         const activeScale = manualSizeOverride ? userScale : calculateAutoFitScale();
-        
         if (!manualSizeOverride) {
           scaleSlider.value = activeScale.toFixed(2);
         }
-
-        // Apply scale to wrapper to prevent breaking frame perspective
-        phoneScaler.style.transform = `scale(${activeScale})`;
-        // Apply 3D rotation separately
-        phoneContainer.style.transform = `rotateY(${currentRot}deg)`;
+        root.style.setProperty('--scale', activeScale);
+        root.style.setProperty('--rot', `${currentRot}deg`);
       }
 
       scaleSlider.addEventListener('input', function() {
@@ -361,17 +424,13 @@
         manualSizeOverride = false;
         currentRot = 0;
         rotateSlider.value = 0;
-        dpiMultiplier = 2;
-        updateDpi();
         applyTransform();
       });
 
       function navigate() {
         let url = urlInput.value.trim();
         if (!url) return;
-        if (!/^https?:\/\//i.test(url)) {
-          url = 'https://' + url;
-        }
+        if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
         webview.src = url;
       }
 
@@ -391,10 +450,7 @@
       });
 
       window.addEventListener('resize', applyTransform);
-      window.addEventListener('load', () => {
-        updateDpi();
-        applyTransform();
-      });
+      window.addEventListener('load', applyTransform);
     })();
   </script>
 </body>
