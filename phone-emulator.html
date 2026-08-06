@@ -1,328 +1,374 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mobile Emulator for Presentation</title>
+  <title>Ultra HD Mobile Emulator</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-    }body {
-margin: 0;
-padding: 0;
-background: transparent;
-min-height: 100vh;
-display: flex;
-align-items: center;
-justify-content: center;
-}
-/* ----- PHONE CONTAINER (3D rotation) ----- */
-#phone-container {
-perspective: 1200px;
-transform: rotateY(var(--rot, 0deg)) scale(var(--scale, 1));
-transition: transform 0.4s ease;
-transform-origin: center center;
-display: inline-block;
-}
-/* ----- PHONE FRAME ----- */
-#phone {
-width: 375px;
-height: 812px;
-background: #000;
-border-radius: 40px;
-padding: 12px;
-box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
-position: relative;
-transition: background 0.3s, border-radius 0.3s;
-flex-shrink: 0;
-}
-/* Screen area */
-#screen {
-width: 100%;
-height: 100%;
-border-radius: 30px;
-overflow: hidden;
-background: white;
-display: flex;
-flex-direction: column;
-}
-/* Status bar */
-#status-bar {
-height: 44px;
-background: rgba(255, 255, 255, 0.95);
-display: flex;
-align-items: center;
-justify-content: space-between;
-padding: 0 24px;
-font-size: 14px;
-font-weight: 600;
-color: #222;
-border-bottom: 1px solid #e5e5e5;
-}
-#status-bar .time {
-font-weight: 700;
-}
-#status-bar .icons {
-display: flex;
-gap: 6px;
-font-size: 16px;
-}
-/* Browser area */
-#browser {
-flex: 1;
-display: flex;
-flex-direction: column;
-background: #f8f9fa;
-}
-/* Address bar */
-#address-bar {
-display: flex;
-padding: 8px 12px;
-gap: 8px;
-background: #fff;
-border-bottom: 1px solid #ddd;
-}
-#address-bar input {
-flex: 1;
-padding: 8px 14px;
-border: 1px solid #ccc;
-border-radius: 20px;
-font-size: 14px;
-outline: none;
-background: #f1f3f4;
-transition: 0.2s;
-}
-#address-bar input:focus {
-border-color: #007aff;
-background: #fff;
-}
-#address-bar button {
-padding: 0 18px;
-background: #007aff;
-color: #fff;
-border: none;
-border-radius: 20px;
-font-size: 14px;
-font-weight: 600;
-cursor: pointer;
-transition: 0.2s;
-}
-#address-bar button:hover {
-background: #005bb5;
-}
-/* Webview iframe */
-#webview {
-flex: 1;
-width: 100%;
-border: none;
-background: white;
-overflow: hidden;
-}
-/* Browser container — scrolls the iframe content */
-#browser {
-flex: 1;
-display: flex;
-flex-direction: column;
-overflow: auto;
-scrollbar-width: none;
--ms-overflow-style: none;
-background: #f8f9fa;
-}
-#browser::-webkit-scrollbar {
-display: none;
-}
-/* Home indicator */
-#home-indicator {
-height: 34px;
-display: flex;
-align-items: center;
-justify-content: center;
-background: rgba(255, 255, 255, 0.95);
-}
-#home-indicator .bar {
-width: 134px;
-height: 5px;
-background: #222;
-border-radius: 3px;
-}
-/* ----- NOTCH (iPhone style) ----- */
-#notch {
-position: absolute;
-top: 12px;
-left: 50%;
-transform: translateX(-50%);
-width: 150px;
-height: 30px;
-background: #000;
-border-radius: 0 0 18px 18px;
-z-index: 10;
-display: flex;
-align-items: center;
-justify-content: center;
-gap: 8px;
-}
-#notch .speaker {
-width: 40px;
-height: 4px;
-background: #333;
-border-radius: 2px;
-}
-#notch .camera {
-width: 8px;
-height: 8px;
-background: #1a1a2e;
-border-radius: 50%;
-border: 1px solid #333;
-}
-/* ----- THEME TOGGLES & CONTROLS ----- */
-#controls {
-margin-top: 30px;
-display: flex;
-gap: 16px;
-flex-wrap: wrap;
-justify-content: center;
-align-items: center;
-}
-#controls button {
-padding: 10px 24px;
-border: none;
-border-radius: 30px;
-font-size: 15px;
-font-weight: 600;
-cursor: pointer;
-background: #2d2d44;
-color: #fff;
-transition: 0.2s;
-}
-#controls button:hover {
-background: #3d3d5c;
-}
-#controls button.active {
-background: #007aff;
-}
-#controls label {
-color: #fff;
-font-size: 14px;
-display: flex;
-align-items: center;
-gap: 8px;
-}
-#controls input[type="range"] {
-width: 120px;
-accent-color: #007aff;
-}
-#controls #rotate-value {
-color: #fff;
-min-width: 32px;
-text-align: center;
-font-size: 14px;
-}
-#controls #reset-rotate {
-background: #555;
-padding: 8px 16px;
-font-size: 13px;
-}
-#controls #reset-rotate:hover {
-background: #777;
-}
-/* ----- ANDROID THEME ----- */
-#phone.android {
-border-radius: 32px;
-background: #1a1a1a;
-}
-#phone.android #notch {
-display: none;
-}
-#phone.android #status-bar {
-background: rgba(240, 240, 240, 0.9);
-}
-#phone.android #address-bar button {
-background: #34a853;
-}
-#phone.android #address-bar button:hover {
-background: #2d8e47;
-}
-#phone.android #home-indicator .bar {
-background: #666;
-width: 48px;
-}
-/* ----- RESPONSIVE SCALING (applied to container) ----- */
-@media (max-width: 440px) {
-#phone-container {
---scale: 0.85;
-}
-}
-@media (max-width: 380px) {
-#phone-container {
---scale: 0.7;
-}
-}
-#controls.hidden {
-display: none !important;
-}
-</style>
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+    body {
+      background: #090a0f;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+    }
+
+    /* Outer Wrapper for scaling without bitmap stretching */
+    #phone-scaler {
+      transform-origin: center center;
+      will-change: transform;
+    }
+
+    #phone-container {
+      perspective: 2000px;
+      transform-origin: center center;
+      display: inline-block;
+      will-change: transform;
+    }
+
+    /* ----- PHONE FRAME ----- */
+    #phone {
+      width: 375px;
+      height: 812px;
+      background: #000;
+      border-radius: 44px;
+      padding: 12px;
+      box-shadow: 0 30px 100px rgba(0, 0, 0, 0.9), 0 0 0 2px #2a2a2a;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    /* Screen area */
+    #screen {
+      width: 100%;
+      height: 100%;
+      border-radius: 32px;
+      overflow: hidden;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Status bar */
+    #status-bar {
+      height: 44px;
+      background: rgba(255, 255, 255, 0.98);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #222;
+      border-bottom: 1px solid #e5e5e5;
+      user-select: none;
+      z-index: 20;
+    }
+    #status-bar .time { font-weight: 700; }
+    #status-bar .icons { display: flex; gap: 6px; font-size: 15px; }
+
+    /* Browser area */
+    #browser {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #f8f9fa;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Address bar */
+    #address-bar {
+      display: flex;
+      padding: 8px 12px;
+      gap: 8px;
+      background: #fff;
+      border-bottom: 1px solid #ddd;
+      z-index: 20;
+    }
+    #address-bar input {
+      flex: 1;
+      padding: 8px 14px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      font-size: 13px;
+      outline: none;
+      background: #f1f3f4;
+    }
+    #address-bar button {
+      padding: 0 16px;
+      background: #007aff;
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* 
+      ULTRA HD IFRAME WRAPPER 
+      Renders the webview at double density (2x DPI) and shrinks it 
+      with transform to force razor-sharp vector/font anti-aliasing.
+    */
+    #webview-container {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #webview {
+      width: 200%;
+      height: 200%;
+      border: none;
+      background: #fff;
+      transform-origin: top left;
+      transform: scale(0.5);
+    }
+
+    /* Home indicator */
+    #home-indicator {
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.98);
+      z-index: 20;
+    }
+    #home-indicator .bar {
+      width: 134px;
+      height: 5px;
+      background: #222;
+      border-radius: 3px;
+    }
+
+    /* Notch */
+    #notch {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 150px;
+      height: 30px;
+      background: #000;
+      border-radius: 0 0 18px 18px;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    #notch .speaker { width: 40px; height: 4px; background: #222; border-radius: 2px; }
+    #notch .camera { width: 8px; height: 8px; background: #111; border-radius: 50%; border: 1px solid #222; }
+
+    /* Control Panel */
+    #controls {
+      position: fixed;
+      bottom: 20px;
+      background: rgba(25, 27, 40, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 12px 24px;
+      border-radius: 40px;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      border: 1px solid rgba(255,255,255,0.12);
+      z-index: 1000;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+    #controls label {
+      color: #fff;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #controls input[type="range"] {
+      width: 100px;
+      accent-color: #007aff;
+    }
+    #controls button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      background: #2d2d44;
+      color: #fff;
+    }
+    #controls button.active { background: #007aff; }
+
+    /* Android Mode Override */
+    #phone.android #notch { display: none; }
+    #phone.android #home-indicator .bar { width: 48px; background: #666; }
+  </style>
 </head>
-<body>  <!-- Phone Container for 3D -->  <div id="phone-container">
-    <!-- Phone -->
-    <div id="phone" class="iphone">
-      <!-- Notch (iPhone only) -->
-      <div id="notch">
-        <span class="speaker"></span>
-        <span class="camera"></span>
-      </div>      <div id="screen">
-        <!-- Status Bar -->
-        <div id="status-bar">
-          <span class="time" id="clock">9:41</span>
-          <span class="icons">📶 📶 🔋</span>
-        </div>        <!-- Browser -->        <div id="browser">
-          <div id="address-bar">
-            <input type="text" id="url-input" placeholder="Enter URL (e.g. http://localhost:3000)" value="" />
-            <button id="go-btn">Go</button>
+<body>
+
+  <!-- Scaler Wrapper: Handles Size without destroying DPI -->
+  <div id="phone-scaler">
+    <div id="phone-container">
+      <div id="phone" class="iphone">
+        <div id="notch">
+          <span class="speaker"></span>
+          <span class="camera"></span>
+        </div>
+        <div id="screen">
+          <div id="status-bar">
+            <span class="time" id="clock">09:41</span>
+            <span class="icons">📶 🔋</span>
           </div>
-          <iframe id="webview" src="about:blank" sandbox="allow-scripts allow-same-origin allow-forms" scrolling="auto"></iframe>
-        </div>        <!-- Home Indicator -->        <div id="home-indicator">
-          <div class="bar"></div>
+          <div id="browser">
+            <div id="address-bar">
+              <input type="text" id="url-input" placeholder="http://localhost:3000" />
+              <button id="go-btn">Go</button>
+            </div>
+            <!-- HD Super-Sampling Container -->
+            <div id="webview-container">
+              <iframe id="webview" src="about:blank"></iframe>
+            </div>
+          </div>
+          <div id="home-indicator">
+            <div class="bar"></div>
+          </div>
         </div>
       </div>
     </div>
-  </div>  <div id="controls" class="hidden">
+  </div>
+
+  <!-- Interactive Controls Panel -->
+  <div id="controls">
     <button id="theme-iphone" class="active">iPhone</button>
     <button id="theme-android">Android</button>
-    <label>Rotate: <input type="range" id="rotate-slider" min="-90" max="90" value="0" /> <span id="rotate-value">0°</span></label>
-    <button id="reset-rotate">Reset</button>
-  </div>  <script>
+    
+    <label>Rotate:
+      <input type="range" id="rotate-slider" min="-90" max="90" value="0" />
+    </label>
+
+    <label>Size:
+      <input type="range" id="scale-slider" min="0.5" max="3.0" step="0.05" value="1.0" />
+    </label>
+
+    <label>Resolution:
+      <button id="dpi-toggle" style="background:#007aff; padding:4px 12px;">2x HD</button>
+    </label>
+
+    <button id="reset-btn">Reset</button>
+  </div>
+
+  <script>
     (function() {
-      // ----- Elements -----
       const urlInput = document.getElementById('url-input');
       const goBtn = document.getElementById('go-btn');
       const webview = document.getElementById('webview');
       const phone = document.getElementById('phone');
       const themeIphone = document.getElementById('theme-iphone');
       const themeAndroid = document.getElementById('theme-android');
-      const clock = document.getElementById('clock');
       const rotateSlider = document.getElementById('rotate-slider');
-      const rotateValue = document.getElementById('rotate-value');
-      const resetRotateBtn = document.getElementById('reset-rotate');
+      const scaleSlider = document.getElementById('scale-slider');
+      const dpiToggle = document.getElementById('dpi-toggle');
+      const resetBtn = document.getElementById('reset-btn');
       const phoneContainer = document.getElementById('phone-container');
+      const phoneScaler = document.getElementById('phone-scaler');
 
-      // ----- Clock update -----
-      function updateClock() {
-        const now = new Date();
-        const h = String(now.getHours()).padStart(2, '0');
-        const m = String(now.getMinutes()).padStart(2, '0');
-        clock.textContent = h + ':' + m;
+      let currentRot = 0;
+      let userScale = 1.0;
+      let manualSizeOverride = false;
+      let dpiMultiplier = 2; // Default 2x HD Supersampling
+
+      // HD Resolution Multiplier Logic
+      function updateDpi() {
+        if (dpiMultiplier === 1) {
+          webview.style.width = '100%';
+          webview.style.height = '100%';
+          webview.style.transform = 'none';
+          dpiToggle.textContent = '1x SD';
+          dpiToggle.style.background = '#555';
+        } else if (dpiMultiplier === 2) {
+          webview.style.width = '200%';
+          webview.style.height = '200%';
+          webview.style.transform = 'scale(0.5)';
+          dpiToggle.textContent = '2x HD';
+          dpiToggle.style.background = '#007aff';
+        } else if (dpiMultiplier === 3) {
+          webview.style.width = '300%';
+          webview.style.height = '300%';
+          webview.style.transform = 'scale(0.333333)';
+          dpiToggle.textContent = '3x Ultra HD';
+          dpiToggle.style.background = '#34c759';
+        }
       }
-      updateClock();
-      setInterval(updateClock, 30000);
 
-      // ----- Navigate -----
+      dpiToggle.addEventListener('click', function() {
+        dpiMultiplier = dpiMultiplier === 1 ? 2 : (dpiMultiplier === 2 ? 3 : 1);
+        updateDpi();
+      });
+
+      function calculateAutoFitScale() {
+        if (manualSizeOverride) return userScale;
+
+        const phoneWidth = 375;
+        const phoneHeight = 812;
+        const margin = 160; 
+
+        const scaleX = (window.innerWidth - margin) / phoneWidth;
+        const scaleY = (window.innerHeight - margin) / phoneHeight;
+        
+        return Math.min(scaleX, scaleY);
+      }
+
+      function applyTransform() {
+        const activeScale = manualSizeOverride ? userScale : calculateAutoFitScale();
+        
+        if (!manualSizeOverride) {
+          scaleSlider.value = activeScale.toFixed(2);
+        }
+
+        // Apply scale to wrapper to prevent breaking frame perspective
+        phoneScaler.style.transform = `scale(${activeScale})`;
+        // Apply 3D rotation separately
+        phoneContainer.style.transform = `rotateY(${currentRot}deg)`;
+      }
+
+      scaleSlider.addEventListener('input', function() {
+        manualSizeOverride = true;
+        userScale = parseFloat(this.value);
+        applyTransform();
+      });
+
+      rotateSlider.addEventListener('input', function() {
+        currentRot = parseInt(this.value, 10);
+        applyTransform();
+      });
+
+      resetBtn.addEventListener('click', function() {
+        manualSizeOverride = false;
+        currentRot = 0;
+        rotateSlider.value = 0;
+        dpiMultiplier = 2;
+        updateDpi();
+        applyTransform();
+      });
+
       function navigate() {
         let url = urlInput.value.trim();
         if (!url) return;
-        // Add protocol if missing
         if (!/^https?:\/\//i.test(url)) {
           url = 'https://' + url;
         }
@@ -330,72 +376,26 @@ display: none !important;
       }
 
       goBtn.addEventListener('click', navigate);
-      urlInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') navigate();
+      urlInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') navigate(); });
+
+      themeIphone.addEventListener('click', () => {
+        phone.classList.remove('android');
+        themeIphone.classList.add('active');
+        themeAndroid.classList.remove('active');
       });
 
-      // Load last URL from localStorage if any
-      try {
-        const saved = localStorage.getItem('phoneEmulatorUrl');
-        if (saved) {
-          urlInput.value = saved;
-          webview.src = saved;
-        }
-      } catch (_) {}
-
-      // Save URL on load
-      webview.addEventListener('load', function() {
-        try {
-          localStorage.setItem('phoneEmulatorUrl', webview.src);
-        } catch (_) {}
+      themeAndroid.addEventListener('click', () => {
+        phone.classList.add('android');
+        themeAndroid.classList.add('active');
+        themeIphone.classList.remove('active');
       });
 
-      // ----- Theme switching -----
-      function setTheme(theme) {
-        phone.classList.remove('iphone', 'android');
-        phone.classList.add(theme);
-        themeIphone.classList.toggle('active', theme === 'iphone');
-        themeAndroid.classList.toggle('active', theme === 'android');
-      }
-
-      themeIphone.addEventListener('click', () => setTheme('iphone'));
-      themeAndroid.addEventListener('click', () => setTheme('android'));
-
-      // ----- Handle iframe errors (show fallback) -----
-      webview.addEventListener('error', function() {
-        // Some browsers don't fire error for cross-origin, but we try.
-        webview.srcdoc = `
-          <div style="display:flex;align-items:center;justify-content:center;height:100%;font-family:sans-serif;color:#555;text-align:center;padding:20px;">
-            <div>
-              <p style="font-size:20px;margin-bottom:8px;">⚠️ Could not load page</p>
-              <p style="font-size:14px;">The site may have security policies that prevent embedding.</p>
-              <p style="font-size:14px;">Try using a localhost URL or a page that allows iframes.</p>
-            </div>
-          </div>
-        `;
-      });
-
-      // ----- 3D Rotation -----
-      rotateSlider.addEventListener('input', function() {
-        const deg = this.value;
-        rotateValue.textContent = deg + '°';
-        phoneContainer.style.setProperty('--rot', deg + 'deg');
-      });
-
-      resetRotateBtn.addEventListener('click', function() {
-        rotateSlider.value = 0;
-        rotateValue.textContent = '0°';
-        phoneContainer.style.setProperty('--rot', '0deg');
-      });
-
-      console.log('Mobile Emulator ready. Paste your URL and press Go.');
-      // Toggle controls with Ctrl+Shift+C
-      document.addEventListener('keydown', function(e) {
-        if (e.ctrlKey && e.shiftKey && e.key === 'C') {
-          const controls = document.getElementById('controls');
-          controls.classList.toggle('hidden');
-        }
+      window.addEventListener('resize', applyTransform);
+      window.addEventListener('load', () => {
+        updateDpi();
+        applyTransform();
       });
     })();
-  </script></body>
+  </script>
+</body>
 </html>
