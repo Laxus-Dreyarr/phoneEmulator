@@ -12,6 +12,9 @@ autoHideMenuBar: true,
 resizable: true,
 minWidth: 360,
 minHeight: 700,
+transparent: true,
+frame: false,
+backgroundColor: '#00000000',
 });
 win.loadFile('phone-emulator.html');
 }

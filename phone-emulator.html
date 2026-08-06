@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PNG-Style Floating Phone Emulator</title>
+  <title>PNG Cutout Phone Emulator</title>
   <style>
     :root {
       --scale: 1;
@@ -18,38 +18,39 @@
       -moz-osx-font-smoothing: grayscale;
     }
 
-    /* Fully transparent root and body with zero margin/padding */
+    /* Force absolute transparency on all browser elements */
     html, body {
       width: 100%;
       height: 100%;
       background: transparent !important;
-      background-color: rgba(0,0,0,0) !important;
+      background-color: transparent !important;
       overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
     }
 
-    /* Container wraps tightly around the phone bounds */
+    /* Tight container around phone */
     #emulator-wrapper {
       position: relative;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background: transparent;
+      background: transparent !important;
     }
 
-    /* 3D Scene */
     #phone-scene {
       perspective: calc(2000px * var(--scale));
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background: transparent;
+      background: transparent !important;
     }
 
-    /* ----- PHONE FRAME (Clean PNG Cutout Styling) ----- */
+    /* ----- PHONE FRAME ----- */
     #phone {
       width: calc(375px * var(--scale));
       height: calc(812px * var(--scale));
@@ -61,8 +62,7 @@
       transform: rotateY(var(--rot));
       transform-style: preserve-3d;
       transition: background 0.3s;
-      /* Removed heavy outer drop-shadows that create dark rectangular borders */
-      box-shadow: 0 0 0 calc(2px * var(--scale)) #1a1a1a;
+      box-shadow: 0 0 calc(30px * var(--scale)) rgba(0, 0, 0, 0.35);
     }
 
     /* Screen area */
@@ -200,13 +200,13 @@
     }
 
     /* Android Mode Override */
-    #phone.android { border-radius: calc(32px * var(--scale)); background: #1a1a1a; }
+    #phone.android { border-radius: calc(28px * var(--scale)); background: #111111; padding: calc(8px * var(--scale)); }
     #phone.android #notch { display: none; }
     #phone.android #status-bar { background: rgba(240, 240, 240, 0.9); }
     #phone.android #address-bar button { background: #34a853; }
     #phone.android #home-indicator .bar { width: calc(48px * var(--scale)); background: #666666; }
 
-    /* ----- FLOATING RIGHT-SIDE CONTROLS ----- */
+    /* Floating Controls */
     #controls-container {
       position: absolute;
       right: calc(-55px);
@@ -237,7 +237,6 @@
       transform: scale(1.08);
     }
 
-    /* Popout Flyout Panel */
     #controls-panel {
       position: absolute;
       left: 50px;
@@ -337,7 +336,6 @@
       </div>
     </div>
 
-    <!-- Toggle Button on the Right Edge -->
     <div id="controls-container">
       <button id="controls-toggle" title="Toggle Controls">⚙️</button>
       
@@ -379,7 +377,6 @@
       let userScale = 1.0;
       let manualSizeOverride = false;
 
-      // Toggle Flyout Menu
       controlsToggle.addEventListener('click', (e) => {
         e.stopPropagation();
         controlsPanel.classList.toggle('open');
@@ -393,9 +390,9 @@
 
       function calculateAutoFitScale() {
         if (manualSizeOverride) return userScale;
-        const phoneWidth = 375, phoneHeight = 812, margin = 80; 
-        const scaleX = (window.innerWidth - margin) / phoneWidth;
-        const scaleY = (window.innerHeight - margin) / phoneHeight;
+        const phoneWidth = 375, phoneHeight = 812;
+        const scaleX = window.innerWidth / phoneWidth;
+        const scaleY = window.innerHeight / phoneHeight;
         return Math.min(scaleX, scaleY);
       }
 
