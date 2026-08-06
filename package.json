@@ -1,0 +1,13 @@
+
+{
+  "name": "phone-emulator-desktop",
+  "version": "1.0.0",
+  "description": "Mobile phone emulator desktop app",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^30.0.0"
+  }
+}
