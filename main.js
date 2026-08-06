@@ -14,8 +14,10 @@ minWidth: 360,
 minHeight: 700,
 transparent: true,
 frame: false,
+alwaysOnTop: true,
 backgroundColor: '#00000000',
 });
+win.setAlwaysOnTop(true, 'screen-saver');
 win.loadFile('phone-emulator.html');
 }
 app.whenReady().then(() => {
