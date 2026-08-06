@@ -35,12 +35,18 @@
 
     /* Tight container around phone */
     #emulator-wrapper {
-      position: relative;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
       display: inline-flex;
       align-items: center;
       justify-content: center;
       background: transparent !important;
+      cursor: grab;
+      user-select: none;
     }
+    #emulator-wrapper.dragging { cursor: grabbing; }
 
     #phone-scene {
       perspective: calc(2000px * var(--scale));
@@ -447,6 +453,38 @@
 
       window.addEventListener('resize', applyTransform);
       window.addEventListener('load', applyTransform);
+
+      // ----- DRAG TO MOVE -----
+      const wrapper = document.getElementById('emulator-wrapper');
+      let isDragging = false;
+      let startX = 0, startY = 0, offsetX = 0, offsetY = 0;
+
+      wrapper.addEventListener('mousedown', (e) => {
+        // Don't start a drag from interactive elements (inputs, buttons, controls, webview)
+        if (e.target.closest('input, button, #controls-container, #controls-panel, #controls-toggle, iframe')) return;
+        isDragging = true;
+        const rect = wrapper.getBoundingClientRect();
+        startX = e.clientX;
+        startY = e.clientY;
+        offsetX = rect.left;
+        offsetY = rect.top;
+        wrapper.style.left = offsetX + 'px';
+        wrapper.style.top = offsetY + 'px';
+        wrapper.style.transform = 'none';
+        wrapper.classList.add('dragging');
+        e.preventDefault();
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        wrapper.style.left = (offsetX + (e.clientX - startX)) + 'px';
+        wrapper.style.top = (offsetY + (e.clientY - startY)) + 'px';
+      });
+
+      document.addEventListener('mouseup', () => {
+        isDragging = false;
+        wrapper.classList.remove('dragging');
+      });
     })();
   </script>
 </body>
